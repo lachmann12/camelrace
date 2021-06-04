@@ -1,4 +1,4 @@
-FROM tutum/lamp
+FROM tutum/lamp:latest
 
 RUN mkdir -p /app/camelrace
 
