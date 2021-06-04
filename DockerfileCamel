@@ -1,4 +1,4 @@
-FROM tutum/lamp:latest
+FROM mylesp/dockerlamp
 
 RUN mkdir -p /app/camelrace
 
