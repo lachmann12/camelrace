@@ -1,0 +1,466 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Rocket Flight</title>
+    <link rel="icon" href="images/rocket">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
+    
+    
+    <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap.min.js"></script>
+    
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans|Raleway|Roboto|Shrikhand|Spirax|Slabo 27px|Indie Flower|Poor Story|Press Start 2P" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    
+    <script src="js/jqueryform.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    
+    <script src="js/prettify.js"></script>
+    
+    
+    <link href="https://fonts.googleapis.com/css?family=Orbitron" rel="stylesheet"> 
+
+</head>
+
+<style type="text/css">
+
+    body{
+        background-color: black;
+        font-family: 'Orbitron', sans-serif;
+    }
+
+    #content{
+        width: 100%;
+        height: 100%;
+    }
+
+    #player{
+        text-align: center;
+        width: 60px;
+        height: 100px;
+        
+        z-index: 20;
+        
+        position: absolute;
+        color: black;
+        font-size: 18px;
+        
+        text-shadow:
+            -1px -1px 0 #000,
+            1px -1px 0 #000,
+            -1px 1px 0 #000,
+            1px 1px 0 #000;
+        
+        color: lightgrey;
+          -webkit-text-fill-color: lightgrey; /* Will override color (regardless of order) */
+          -webkit-text-stroke-width: 1px;
+          -webkit-text-stroke-color: lightgrey;
+    }
+
+    #player:hover{
+        color: black;
+          -webkit-text-fill-color: black; /* Will override color (regardless of order) */
+          -webkit-text-stroke-width: 1px;
+          -webkit-text-stroke-color: black;
+    }
+
+    #plustwo{
+        margin-top: 5px;
+        margin-left: 10px;
+        width: 30px;
+        background-color: grey;
+        padding: 0px;
+        border: 1px solid black;
+    }
+    #plustwo:hover{
+        background-color: red;
+    }
+    
+    #plusone{
+        display: none;
+        margin-top: 5px;
+        margin-left: 6px;
+        width: 30px;
+        background-color: grey;
+        padding: 0px;
+        border: 1px solid black;
+    }
+    
+    #plusone:hover{
+        background-color: yellow;
+    }
+    
+    #rocketlaunch{
+        position: absolute;
+        z-index: 2;
+        
+        width: 200px;
+        height: 200px;
+        top: 50px;
+        left: 50px;
+        
+        text-align: center;
+    }
+    
+    #rocketbutton:hover{
+        transform: scale(1.3, 1.3);
+    }
+    
+    #votes{
+        text-align: center;
+        font-size: 40px;
+        
+        position: absolute;
+        top: 40px;
+        right: 110px;
+        
+        color: white;
+        
+        z-index: 999;
+        
+          -webkit-text-fill-color: white; /* Will override color (regardless of order) */
+          -webkit-text-stroke-width: 1px;
+          -webkit-text-stroke-color: white;
+    }
+    
+    #backgroundimage{
+        position: absolute;
+        width: 100%;
+        height: 100%;
+    }
+    
+    #moon{
+        z-index: 3;
+        position: absolute;
+        display: none;
+        
+        width: 10px;
+        height: 10px;
+        
+        top: 30%;
+        left: 30%;
+    }
+    
+    #star{
+        z-index: 1;
+        position: absolute;
+        display: none;
+    }
+    
+    #camel{
+        top: -100px;
+        position: absolute;
+        
+        z-index: 998;
+    }
+    td { 
+        padding-right: 20px;
+    }
+    
+    #scores{
+        font-size: 30px;
+    }
+    
+    .smoke{
+        position: absolute;
+        top: 74px;
+        left: -10px;
+    }
+    
+    .victory{
+        position: absolute;
+        top: 15px;
+        left: 76px;
+    }
+
+
+</style>
+
+
+<script>
+    
+    players = ["Avi", "Kathleen", "Allison", "Max", "Eryk", "Alex", "Sherry", "Abigail", "Ingrid", "Daniel", "Erol", "Gaby", "Megan", "Minji", "Janice"]
+    players = players.sort()
+    score = []
+    totalVotes = 0
+    
+    first = "";
+    second = "";
+    third = "";
+    
+    var audioLaunch = new Audio('sounds/launch.mp3');
+    var audioClaps = new Audio('sounds/moo.mp3');
+    
+    $( document ).ready(function() {
+        
+        distance = 100/(players.length+2);
+        
+        for(i=0; i<players.length; i++){
+            score[i] = 0
+            offset = (i%2)*30+80
+            newplayer = "<div style=\"left: "+(distance)*(i+1)+"%; bottom: "+offset+"px;\" class=\"p"+players[i]+"\" id=\"player\">"+players[i]+
+            "<img class=\"rocketimg\" id=\"rocket"+i+"\" src=\"images/rocket_out.png\" width=\"55\">"+
+            "<button type=\"button\" id=\"plustwo\" class=\"btn btn-lg btn-block btn-outline-primary\" onclick=\"addPoints(2, "+i+");\">+2</button>"+
+            "<button type=\"button\" id=\"plusone\" class=\"btn btn-lg btn-block btn-outline-primary\" onclick=\"addPoints(1, "+i+");\">+1</button>"+
+            "</div>"
+            $("#content").append(newplayer);
+        }
+        
+        startButton = "<div id=\"rocketlaunch\"><a href=\"javascript:launch()\"><img id=\"rocketbutton\" src=\"images/rocketlaunch.png\" width=180></a></div>"
+        $("#content").append(startButton);
+        
+        votetext = "<div id=\"votes\"></div>"
+        $("#content").append(votetext);
+        
+        addStars();
+    });
+    
+    function addPoints(points, playerid){
+        console.log(score)
+        score[playerid] += points
+        totalVotes += points;
+        if(points == 2){
+            $("[id=plustwo]").toggle();
+            $("[id=plusone]").toggle();
+        }
+        else{
+            $("[id=plustwo]").toggle();
+            $("[id=plusone]").toggle();
+        }
+        $("#votes").html("Votes<br>"+totalVotes);
+    }
+    
+    function launch(){
+        $("[id=plusone]").fadeOut();
+        $("[id=plustwo]").fadeOut();
+        $("#rocketlaunch").fadeOut();
+        setTimeout(launch2(),200);
+        
+        for(i=0; i<players.length; i++){
+            $("#rocket"+i).attr("src","images/rocket.png");
+        }
+    }
+    
+    function launch2(){
+        $("[id=player]").animate({height: "120%"}, 5000, "easeInQuint");
+        setTimeout(launch3, 3000);
+    }
+    
+    function launch3(){
+        console.log("3");
+        $("#backgroundimage").animate({top: "900px"}, 2000, "easeInSine");
+        $("[id=star]").fadeIn();
+        audioLaunch.play();
+        setTimeout(launch4, 2000);
+    }
+    
+    function top3show(){
+        
+        //1) combine the arrays:
+        var list = [];
+        for (var j = 0; j < players.length; j++) 
+            list.push({'player': players[j], 'score': score[j]});
+        
+        //2) sort:
+        list.sort(function(a, b) {
+            return ((a.score > b.score) ? -1 : ((a.score == b.score) ? 0 : 1));
+            //Sort could be modified to, for example, sort on the age 
+            // if the name is the same.
+        });
+        
+        //3) separate them back out:
+        for (var k = 0; k < list.length; k++) {
+            score[k] = list[k].score;
+            players[k] = list[k].player;
+        }
+        
+        first = players[0];
+        second = players[1];
+        third = players[2];
+        
+        console.log(first, second, third)
+        
+        var r1 = Math.floor(Math.random() * 40 + 40);
+        var r2 = Math.floor(Math.random() * 40 + 40);
+        var r3 = Math.floor(Math.random() * 40 + 40);
+        
+        $(".p"+second).css({top: "120%", left: r1+"%"});
+        $(".p"+third).css({top: "140%", left: r2+"%"});
+        $(".p"+first).css({top: "130%", left: r3+"%"});
+        
+        r1 = Math.floor(Math.random() * 40 + 40);
+        r2 = Math.floor(Math.random() * 40 + 40);
+        r3 = Math.floor(Math.random() * 40 + 40);
+        
+        $(".p"+third).animate({top: "290px",left: r1+"%"}, 4000, "easeInOutBack")
+        $(".p"+first).animate({top: "310px",left: r2+"%"}, 4000, "easeInOutBack")
+        $(".p"+second).animate({top: "300px",left: r3+"%"}, 4000, "easeInOutBack")
+        setTimeout(stay, 4000);
+    }
+    
+    function stay(){
+        var r1 = Math.floor(Math.random() * 40 + 40);
+        var r2 = Math.floor(Math.random() * 40 + 40);
+        var r3 = Math.floor(Math.random() * 40 + 40);
+        
+        var r4 = Math.floor(Math.random() * 200 + 100);
+        var r5 = Math.floor(Math.random() * 200 + 100);
+        var r6 = Math.floor(Math.random() * 200 + 100);
+        
+        $(".p"+second).animate({top: r4+"px",left: r1+"%"}, 3700, "easeInOutBack")
+        $(".p"+first).animate({top: r5+"px",left: r2+"%"}, 3500, "easeInOutBack")
+        $(".p"+third).animate({top: r6+"px",left: r3+"%"}, 4000, "easeInOutBack")
+        setTimeout(leave, 4000);
+    }
+    
+    function leave(){
+        var r1 = Math.floor(Math.random() * 50 + 40);
+        var r2 = Math.floor(Math.random() * 50 + 40);
+        var r3 = Math.floor(Math.random() * 50 + 40);
+        $(".p"+first).animate({top: "-230px",left: r1+"%"}, 1500, "easeInOutBack")
+        $(".p"+second).animate({top: "-230px",left: r2+"%"}, 1550, "easeInOutBack")
+        $(".p"+third).animate({top: "-230px",left: r3+"%"}, 1600, "easeInOutBack")
+    }
+    
+    function launch4(){
+        console.log("4");
+        $("#moon").fadeIn();
+        $('#moon').animate({width: "600px",height: "600px"}, 14000)
+        
+        setTimeout(cameljump, 17000);
+        setTimeout(launch6, 15000);
+        setTimeout(top3show, 1000);
+    }
+    
+    function cameljump(){
+        
+        
+        for(i=0; i<players.length; i++){
+            $("#rocket"+i).attr("src","images/rocket_out.png");
+        }
+        
+        for(i=0; i<players.length; i++){
+            $("#rocket"+i).parent().append("<img id=\"smoke"+i+"\" class=\"smoke\" src=\"images/smoke.png\" width=80>");
+            $("#smoke"+i).animate({opacity: 0, width: "200px", left: "-60px"}, 1000, "easeInOutBack")
+        }
+        
+        $("#camel").css({top: "30%", left: "50%"});
+        $("#camel").animate({top: "24%",left: "45%"}, 250, "easeOutCubic")
+        $("#camel").animate({top: "34%",left: "40%"}, 250, "easeInCubic")
+        //$("#camel").append("<img id=\"victory\" class=\"victory\" src=\"images/victory.png\" width=\"5\">");
+        //$("#victory").animate({width: "36px"}, 500, "easeInOutBack");
+        audioClaps.play();
+    }
+    
+    function launch6(){
+        
+        var r1 = Math.floor(Math.random() * 3 + 30);
+        var r2 = Math.floor(Math.random() * 3 + 30);
+        var r3 = Math.floor(Math.random() * 3 + 30);
+        
+        console.log("launch6");
+        $('.p'+first).css({top: "-100px", left: "50%"})
+        $('.p'+first).animate({top: r1+"%"}, 1500)
+        
+        if(score[0] == score[1]){
+            $('.p'+second).css({top: "-100px", left: "55%"})
+            $('.p'+second).animate({top: r2+"%"}, 1500)
+        }
+        
+        if(score[0] == score[2]){
+            $('.p'+third).css({top: "-100px", left: "45%"})
+            $('.p'+third).animate({top: r3+"%"}, 1500)
+        }
+        
+        $("#moon").attr("src","images/moon2.png");
+        
+        finalScores = "Highscore<br>"
+        
+        finalScores += "<br><table id=\"scores\" style=\"border: none;\">";
+        for(i=0; i<players.length; i++){
+            finalScores+="<tr><td>"+players[i]+"</td><td>"+score[i]+"</td></tr>";
+        }
+        finalScores += "</table>";
+        
+        $("#votes").html(finalScores)
+        $("#votes").css({fontSize: "40px", textAlign: "right"})
+        
+        save();
+    }
+    
+    function addStars(){
+        for(i=0; i<100; i++){
+            rtop = Math.round(Math.random()*900)
+            rleft = Math.round(Math.random()*1700)
+            
+            rsize = Math.random()*10+2
+            
+            starstring = "<img id=\"star\" src=\"images/star.png\" style=\"top: "+rtop+"; left: "+rleft+"; width: "+rsize+"; height: "+rsize+";\">";
+            $("#content").append(starstring);
+        }
+        
+        $("#content").append("<img id=\"moon\" src=\"images/moon.png\">");
+    }
+    
+    
+    function getSortedKeys(obj) {
+        var keys = []; for(var key in obj) keys.push(key);
+        return keys.sort(function(a,b){return obj[b]-obj[a]});
+    }
+    
+    function save(){
+        
+        jscore = {}
+        
+        for(i=0; i< players.length; i++){
+            jscore[players[i]] = score[i];
+        }
+        
+        var str = JSON.stringify(jscore);
+        
+        $.get("https://amp.pharm.mssm.edu/camelrace/support.php", {points:str}, function(data, status){
+            //totalscore = data;
+            
+        });
+    }
+    
+    function getScores(){
+            
+            $.get("https://amp.pharm.mssm.edu/camelrace/support.php", {userpoints:"gimme"}, function(data, status){
+                scores = data;
+                playernames = getSortedKeys(data);
+                $("#content").html("");
+                
+                var temp = "<div id='result'><div id='finalscores'><table><tr><td>Name</td><td>Score</td><tr>";
+                
+                temp += "<tr id='winner'><td id='namefield'>"+playernames[0]+"</td><td>"+scores[playernames[0]]+"</td><tr>";
+                for(j=1; j<playernames.length; j++){
+                    temp += "<tr><td>"+playernames[j]+"</td><td>"+scores[playernames[j]]+"</td><tr>";
+                }
+                
+                //$("#content").append(temp+"</div></div>");
+                
+            });
+    }
+    
+</script>
+
+<body>
+    <div id="content">
+        <img id="backgroundimage" src="images/hill.png">
+    </div>
+    
+    <div id="camel"><img src="images/camel.png" width="110"></div>
+</body>
+
+
+</html>
+
+
+
+

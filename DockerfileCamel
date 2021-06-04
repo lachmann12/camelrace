@@ -1,0 +1,10 @@
+FROM tutum/lamp
+
+RUN mkdir -p /app/camelrace
+
+
+# Bundle app source
+COPY ./rocket /app/camelrace
+
+EXPOSE 80
+
