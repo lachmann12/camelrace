@@ -5,7 +5,7 @@ docker rm $(docker ps -q -f status=exited)
 docker kill camelrace
 docker rm camelrace
 
-docker build -f DockerfileCamel -t maayanlab/camelrace .
+docker build --platform linux/x86_64 -f DockerfileCamel -t maayanlab/camelrace:1.0 .
 
-docker push maayanlab/camelrace
+docker push maayanlab/camelrace:1.0
 
