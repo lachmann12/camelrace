@@ -182,9 +182,15 @@
 
 
 <script>
+    //players = ["Avi", "Giacomo", "Alex", "Sherry", "Daniel", "Erol", "Vivian", "Juncheng", "Beagan", "Clara", "Sophia", "Eden", "Lauren", "Reid", "Sophie", "Jason", "Cole", "David", "Nhi", "Hannah", "Derek"]
+    var players = []
+    $.holdReady(true);
+    $.getJSON("labmembers.php", function(data) {
+        players = data
+        players = players.sort()
+        $.holdReady(false);
+    });
 
-    players = ["Avi", "Giacomo", "Alex", "Sherry", "Daniel", "Erol", "Vivian", "Juncheng", "Beagan", "Clara", "Sophia", "Eden", "Lauren", "Reid", "Sophie", "Jason", "Cole", "David", "Nhi", "Hannah", "Derek"]
-    players = players.sort()
     score = []
     totalVotes = 0
     
